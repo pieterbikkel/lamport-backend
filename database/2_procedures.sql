@@ -219,6 +219,10 @@ CREATE PROCEDURE updateQuestion (
 	SET intervention.intervention_name = param_name,
 		question.question = param_question
 	WHERE intervention.intervention_id = param_id;
+
+    DELETE
+    FROM answer 
+    WHERE question_id = param_id;
 END //
 
 CREATE PROCEDURE createQuestionnaire (
