@@ -274,7 +274,7 @@ END //
 CREATE PROCEDURE getAnswersByQuestionId(
     IN param_question_id INT
 ) BEGIN
-	SELECT answer
+	SELECT answer,answer_id
 	FROM answer
 	WHERE answer.question_id = param_question_id;
 END //
@@ -354,6 +354,18 @@ CREATE PROCEDURE getLocationById(
     LEFT OUTER JOIN franchise ON location.franchise_id = franchise.franchise_id
     LEFT OUTER JOIN geofence AS area_geofence ON area_geofence.geofence_id = area.geofence_id
     WHERE location_id = id;
+END //
+
+CREATE PROCEDURE updateCommand(
+    IN param_id INT,
+    IN param_name VARCHAR(255),
+    IN param_command VARCHAR(255)
+) BEGIN
+    UPDATE command_in_intervention
+    LEFT OUTER JOIN intervention ON command_in_intervention.intervention_id = intervention.intervention_id
+    LEFT OUTER JOIN command ON command_in_intervention.command_id = command.command_id
+    SET intervention.intervention_name = param_name, command.command = param_command
+    WHERE intervention.intervention_id = param_id;
 END //
 
 CREATE PROCEDURE getCommandsByLocationId(

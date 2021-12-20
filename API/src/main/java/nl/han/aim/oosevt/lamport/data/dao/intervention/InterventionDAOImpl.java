@@ -1,6 +1,5 @@
 package nl.han.aim.oosevt.lamport.data.dao.intervention;
 
-import com.mysql.cj.protocol.Resultset;
 import nl.han.aim.oosevt.lamport.data.entity.*;
 import nl.han.aim.oosevt.lamport.data.util.DatabaseProperties;
 import org.springframework.stereotype.Component;
@@ -63,8 +62,9 @@ public class InterventionDAOImpl implements InterventionDAO {
 
                 while (resultSet.next()) {
                     answers.add(new Answer(
-                            0,
-                            resultSet.getString("answer")));
+                        resultSet.getInt("answer_id"),
+                        resultSet.getString("answer")
+                    ));
                 }
 
                 return answers;
@@ -127,14 +127,15 @@ public class InterventionDAOImpl implements InterventionDAO {
                             resultSet.getString("intervention_name"),
                             resultSet.getString("command"));
                 case "question":
-                    int questionId = resultSet.getInt("intervention_id");
+                    int questionId = resultSet.getInt("question_id");
                     List<Answer> answers = getAnswersByQuestionId(questionId, connection);
 
                     return new Question(
-                            questionId,
-                            resultSet.getString("intervention_name"),
-                            resultSet.getString("question"),
-                            answers);
+                            resultSet.getInt("intervention_id"),
+                        resultSet.getString("intervention_name"),
+                        resultSet.getString("question"),
+                        answers
+                    );
                 case "questionnaire":
                     int interventionId = resultSet.getInt("intervention_id");
 
@@ -215,13 +216,12 @@ public class InterventionDAOImpl implements InterventionDAO {
 
     public void createQuestion(String name, String question, List<Answer> answers) {
         try (Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
-                PreparedStatement statement = connection.prepareStatement("CALL createQuestion(?, ?)")) {
+             PreparedStatement statement = connection.prepareStatement("CALL createQuestion(?, ?)")) {
             statement.setString(1, name);
             statement.setString(2, question);
 
             try (ResultSet resultSet = statement.executeQuery()) {
-
-                if (resultSet.next()) {
+                if(resultSet.next()) {
                     int questionId = resultSet.getInt("question_id");
 
                     setAnswersForQuestion(questionId, answers, connection);
