@@ -23,6 +23,7 @@ class AreaServiceImplTest {
     private final double longitude = 42.312;
     private final double latitude = 32.321;
     private final int radius = 1000;
+    private final String searchQuery = "search";
 
     private Area mockArea;
     private AreaResponseDTO mockAreaResponseDTO;
@@ -75,6 +76,18 @@ class AreaServiceImplTest {
 
         //Assert
         ObjectAssertions.assertEquals(mockAreaResponseDTO, actual);
+    }
+
+    @Test
+    void getAreasBySearch() {
+        //Arrange
+        Mockito.when(areaDAOFixture.getAreasBySearch(searchQuery)).thenReturn(mockAreas);
+
+        //Act
+        List<AreaResponseDTO> actual = sut.getAreasBySearch(searchQuery);
+
+        //Assert
+        ObjectAssertions.assertEquals(areasResponseDTO, actual);
     }
 
     @Test

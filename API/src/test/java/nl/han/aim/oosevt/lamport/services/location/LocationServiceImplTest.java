@@ -54,6 +54,8 @@ public class LocationServiceImplTest {
     private final String answerBAnswer = "Willibrord";
     private final String answerCAnswer = "Calvijn";
 
+    private final String searchQuery = "search";
+
     private LocationDAO locationDAOFixture;
     private AreaDAO areaDAOFixture;
     private FranchiseDAO franchiseDAOFixture;
@@ -318,6 +320,18 @@ public class LocationServiceImplTest {
 
         //Assert
         Mockito.verify(this.locationDAOFixture).getLocations();
+    }
+
+    @Test
+    public void testGetLocationsBySearch() {
+        //Arrange
+        Mockito.when(this.locationDAOFixture.getLocationsBySearch(searchQuery)).thenReturn(new ArrayList<>());
+
+        //Act
+        sut.getLocationsBySearch(searchQuery);
+
+        //Assert
+        Mockito.verify(this.locationDAOFixture).getLocationsBySearch(searchQuery);
     }
 
     @Test

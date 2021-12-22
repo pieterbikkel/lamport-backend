@@ -22,6 +22,7 @@ public class FranchiseServiceImplTest {
     private final int id = 2;
 
     private final String name = "mcDonalds";
+    private final String searchQuery = "search";
 
     private FranchiseDAO franchiseDAOFixture;
 
@@ -76,6 +77,19 @@ public class FranchiseServiceImplTest {
 
         //Assert
         Mockito.verify(this.franchiseDAOFixture).getFranchises();
+    }
+
+    @Test
+    public void testGetFranchisesBySearch() {
+        //Arrange
+        Mockito.when(this.franchiseDAOFixture.getFranchisesBySearch(searchQuery)).thenReturn(new ArrayList<>());
+
+        //Act
+        sut.getFranchisesBySearch(searchQuery);
+
+        //Assert
+        Mockito.verify(this.franchiseDAOFixture).getFranchisesBySearch(searchQuery);
+
     }
 
     @Test

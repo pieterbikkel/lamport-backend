@@ -69,6 +69,8 @@ public class InterventionServiceImplTest {
     private final String commandName = "Name";
     private final String commandText = "Command";
 
+    private final String searchQuery = "search";
+
     private Questionnaire mockQuestionnaire;
 
     private List<AnswerRequestDTO> answerRequestDTO;
@@ -161,6 +163,18 @@ public class InterventionServiceImplTest {
 
         // Act
         List<InterventionResponseDTO> response = sut.getInterventions();
+
+        // Assert
+        ObjectAssertions.assertEquals(interventionDTOS, response);
+    }
+
+    @Test
+    public void getInterventionsBySearch() {
+        // Arrange
+        Mockito.when(mockInterventionDAO.getInterventionsBySearch(searchQuery)).thenReturn(interventions);
+
+        // Act
+        List<InterventionResponseDTO> response = sut.getInterventionsBySearch(searchQuery);
 
         // Assert
         ObjectAssertions.assertEquals(interventionDTOS, response);

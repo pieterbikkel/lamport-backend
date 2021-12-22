@@ -29,7 +29,8 @@ public class RoleServiceImplTest {
     private final int roleId = 1;
     private final int updateRoleId = 1;
     private final String updateRoleName = "updated";
-    private String roleName = "Onderzoeker";
+    private final String roleName = "Onderzoeker";
+    private final String searchQuery = "searchQuery";
     private ArrayList<String> allowedPermissions;
     private RoleServiceImpl sut;
 
@@ -137,6 +138,18 @@ public class RoleServiceImplTest {
 
         // Act
         List<RoleResponseDTO> actual = sut.getRoles();
+
+        // Assert
+        ObjectAssertions.assertEquals(mockRolesResponse, actual);
+    }
+
+    @Test
+    void getExistingRolesBySearch() {
+        // Arrange
+        Mockito.when(roleDAOFixture.getRolesBySearch(searchQuery)).thenReturn(mockRoles);
+
+        // Act
+        List<RoleResponseDTO> actual = sut.getRolesBySearch(searchQuery);
 
         // Assert
         ObjectAssertions.assertEquals(mockRolesResponse, actual);

@@ -21,6 +21,8 @@ public class GoalServiceImplTest {
     private final int id = 2;
     private final String name = "Ga lopen";
 
+    private final String searchQuery = "search";
+
     private GoalDAO goalDAOFixture;
     private Goal goal;
     private GoalServiceImpl sut;
@@ -108,6 +110,18 @@ public class GoalServiceImplTest {
 
         //Assert
         Mockito.verify(this.goalDAOFixture).getGoals();
+    }
+
+    @Test
+    public void testGetGoalsBySearch() {
+        //Arrange
+        Mockito.when(this.goalDAOFixture.getGoalsBySearch(searchQuery)).thenReturn(new ArrayList<>());
+
+        //Act
+        sut.getGoalsBySearch(searchQuery);
+
+        //Assert
+        Mockito.verify(this.goalDAOFixture).getGoalsBySearch(searchQuery);
     }
 
     @Test

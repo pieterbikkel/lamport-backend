@@ -34,6 +34,7 @@ public class UserServiceImplTest {
     private final String email = "b.barends@student.han.nl";
     private final String password = "SomePassword";
     private final String hash = "SomeHash";
+    private final String searchQuery = "searchQuery";
 
     private Role mockRole;
     private User mockUser;
@@ -179,6 +180,18 @@ public class UserServiceImplTest {
 
         // Act
         List<UserResponseDTO> actual = sut.getUsers();
+
+        // Assert
+        ObjectAssertions.assertEquals(usersResponseDTO, actual);
+    }
+
+    @Test
+    void getExistingUsersBySearch() {
+        // Arrange
+        Mockito.when(userDAOFixture.getUsersBySearch(searchQuery)).thenReturn(mockUsers);
+
+        // Act
+        List<UserResponseDTO> actual = sut.getUsersBySearch(searchQuery);
 
         // Assert
         ObjectAssertions.assertEquals(usersResponseDTO, actual);
