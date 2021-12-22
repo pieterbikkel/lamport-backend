@@ -9,8 +9,9 @@ import org.springframework.stereotype.Component;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static nl.han.aim.oosevt.lamport.data.util.DatabaseProperties.connectionString;
@@ -18,8 +19,13 @@ import static nl.han.aim.oosevt.lamport.data.util.DatabaseProperties.connectionS
 @Component
 public class LocationDAOImpl implements LocationDAO {
 
+    private static final Logger LOGGER = Logger.getLogger(LocationDAOImpl.class.getName());
+    private final InterventionDAO interventionDAO;
+
     @Autowired
-    private InterventionDAO interventionDAO;
+    public LocationDAOImpl(InterventionDAO interventionDAO) {
+        this.interventionDAO = interventionDAO;
+    }
 
     private Location locationFromResultSet(ResultSet resultSet) {
         try {
@@ -45,7 +51,7 @@ public class LocationDAOImpl implements LocationDAO {
                     interventionDAO.getInterventionsByLocationId(locationId)
             );
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "locationFromResultSet::A database error occurred!", e);
         }
 
         return null;
@@ -61,14 +67,16 @@ public class LocationDAOImpl implements LocationDAO {
             statement.setDouble(4, latitude);
             statement.setInt(5, radius);
             statement.setInt(6, areaId);
-            statement.setInt(7, franchiseId);
+            if(franchiseId == 0) {
+                statement.setNull(7, Types.INTEGER);
+            } else {
+                statement.setInt(7, franchiseId);
+            }
             statement.setString(8, linkedInterventions.stream().map(Object::toString).collect(Collectors.joining(",")));
 
             statement.executeUpdate();
-
         } catch (SQLException e) {
-
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "createLocation::A database error occurred!", e);
         }
     }
 
@@ -84,7 +92,7 @@ public class LocationDAOImpl implements LocationDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "getLocationById::A database error occurred!", e);
         }
         return null;
     }
@@ -102,7 +110,7 @@ public class LocationDAOImpl implements LocationDAO {
             return foundLocations;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "getLocations::A database error occurred!", e);
         }
         return new ArrayList<>();
     }
@@ -118,12 +126,16 @@ public class LocationDAOImpl implements LocationDAO {
             statement.setDouble(5, latitude);
             statement.setInt(6, radius);
             statement.setInt(7, areaId);
-            statement.setInt(8, franchiseId);
+            if(franchiseId == 0) {
+                statement.setNull(8, Types.INTEGER);
+            } else {
+                statement.setInt(8, franchiseId);
+            }
             statement.setString(9, linkedInterventions.stream().map(Object::toString).collect(Collectors.joining(",")));
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "updateLocation::A database error occurred!", e);
         }
     }
 
@@ -135,18 +147,7 @@ public class LocationDAOImpl implements LocationDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "deleteLocation::A database error occurred!", e);
         }
-    }
-
-    private ArrayList<Integer> getListOfIdsFromString(final String input) {
-        if (input == null || input.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return Arrays
-                .stream(input.split(","))
-                .mapToInt(Integer::valueOf)
-                .boxed()
-                .collect(Collectors.toCollection(ArrayList::new));
     }
 }

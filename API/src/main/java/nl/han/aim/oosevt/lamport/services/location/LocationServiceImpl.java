@@ -49,7 +49,9 @@ public class LocationServiceImpl implements LocationService {
 
         int franchiseId = location.getFranchiseId();
 
-        assertValidFranchise(franchiseId);
+        if(franchiseId != 0) {
+            assertValidFranchise(franchiseId);
+        }
 
         locationDAO.createLocation(location.getName(), location.getDelay(), location.getLongitude(),
                 location.getLatitude(), location.getRadius(), areaId, franchiseId, location.getLinkedInterventions());
@@ -71,7 +73,9 @@ public class LocationServiceImpl implements LocationService {
 
         assertValidLocation(id);
         assertValidArea(areaId);
-        assertValidFranchise(franchiseId);
+        if(franchiseId != 0) {
+            assertValidFranchise(franchiseId);
+        }
 
         locationDAO.updateLocation(newData.getId(), newData.getName(), newData.getDelay(),
                 newData.getLongitude(), newData.getLatitude(), newData.getRadius(), areaId, franchiseId, newData.getLinkedInterventions());
@@ -93,13 +97,13 @@ public class LocationServiceImpl implements LocationService {
             throw new NotFoundException();
         }
 
-        return new LocationResponseDTO().fromData(location);
+        return LocationResponseDTO.fromData(location);
     }
 
     @Override
     public List<LocationResponseDTO> getLocations() {
         return locationDAO.getLocations().stream()
-                .map(locationEntity -> new LocationResponseDTO().fromData(locationEntity))
+                .map(LocationResponseDTO::fromData)
                 .collect(Collectors.toList());
     }
 }

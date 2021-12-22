@@ -3,7 +3,7 @@ package nl.han.aim.oosevt.lamport.services.location;
 import nl.han.aim.oosevt.lamport.ObjectAssertions;
 import nl.han.aim.oosevt.lamport.controllers.area.dto.AreaResponseDTO;
 import nl.han.aim.oosevt.lamport.controllers.franchise.dto.FranchiseResponseDTO;
-import nl.han.aim.oosevt.lamport.controllers.intervention.dto.InterventionResponseDTO;
+import nl.han.aim.oosevt.lamport.controllers.intervention.dto.response.InterventionResponseDTO;
 import nl.han.aim.oosevt.lamport.controllers.location.dto.CreateLocationRequestDTO;
 import nl.han.aim.oosevt.lamport.controllers.location.dto.LocationResponseDTO;
 import nl.han.aim.oosevt.lamport.controllers.location.dto.UpdateLocationRequestDTO;
@@ -11,10 +11,7 @@ import nl.han.aim.oosevt.lamport.data.dao.area.AreaDAO;
 import nl.han.aim.oosevt.lamport.data.dao.franchise.FranchiseDAO;
 import nl.han.aim.oosevt.lamport.data.dao.intervention.InterventionDAO;
 import nl.han.aim.oosevt.lamport.data.dao.location.LocationDAO;
-import nl.han.aim.oosevt.lamport.data.entity.Area;
-import nl.han.aim.oosevt.lamport.data.entity.Franchise;
-import nl.han.aim.oosevt.lamport.data.entity.Intervention;
-import nl.han.aim.oosevt.lamport.data.entity.Location;
+import nl.han.aim.oosevt.lamport.data.entity.*;
 import nl.han.aim.oosevt.lamport.exceptions.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,10 +41,18 @@ public class LocationServiceImplTest {
 
     private final int interventionIdA = 1;
     private final String interventionNameA = "saladebar";
+    private final String commandA = "ga naar de saladebar";
+
     private final int interventionIdB = 2;
-    private final String interventionNameB = "hardlopen";
+    private final String interventionNameB = "bijbelvertaler";
+    private final String interventionQuestionB = "Wie is een bijbelvertaler";
+
     private final int interventionIdC = 3;
     private final String interventionNameC = "kerken tellen";
+
+    private final String answerAAnswer = "Maarten Luther";
+    private final String answerBAnswer = "Willibrord";
+    private final String answerCAnswer = "Calvijn";
 
     private LocationDAO locationDAOFixture;
     private AreaDAO areaDAOFixture;
@@ -59,14 +64,19 @@ public class LocationServiceImplTest {
     private Area mockArea;
     private Franchise mockFranchise;
     private List<Intervention> linkedInterventions;
-    private Intervention interventionA;
-    private Intervention interventionB;
-    private Intervention interventionC;
+    private Command interventionA;
+    private Question interventionB;
+    private Questionnaire interventionC;
+    private List<Answer> answers;
+    private List<Question> questions;
     private List<Integer> linkedInterventionIds;
     private LocationResponseDTO locationResponseDTO;
     private List<InterventionResponseDTO> interventionResponseDTOs;
     private AreaResponseDTO areaResponseDTO;
     private FranchiseResponseDTO franchiseResponseDTO;
+    private Answer answerA;
+    private Answer answerB;
+    private Answer answerC;
 
     private LocationServiceImpl sut;
 
@@ -86,9 +96,24 @@ public class LocationServiceImplTest {
                 new UpdateLocationRequestDTO(id, name, delay, longitude, latitude, radius, areaId, franchiseId, linkedInterventionIds)
         );
 
-        interventionA = new Intervention(interventionIdA, interventionNameA);
-        interventionB = new Intervention(interventionIdB, interventionNameB);
-        interventionC = new Intervention(interventionIdC, interventionNameC);
+        answerA = new Answer(1, answerAAnswer);
+        answerB = new Answer(2, answerBAnswer);
+        answerC = new Answer(3, answerCAnswer);
+
+        answers = new ArrayList<>();
+
+        answers.add(answerA);
+        answers.add(answerB);
+        answers.add(answerC);
+
+        questions = new ArrayList<>();
+
+        interventionA = new Command(interventionIdA, interventionNameA, commandA);
+        interventionB = new Question(interventionIdB, interventionNameB, interventionQuestionB, answers);
+
+        questions.add(interventionB);
+
+        interventionC = new Questionnaire(interventionIdC, interventionNameC, questions);
 
         linkedInterventions = new ArrayList<>();
 
@@ -105,12 +130,12 @@ public class LocationServiceImplTest {
         mockFranchise = new Franchise(franchiseId, franchiseName);
         mockLocation = new Location(id, name, delay, longitude, latitude, radius, mockArea, mockFranchise, linkedInterventions);
 
-        areaResponseDTO = new AreaResponseDTO().fromData(mockArea);
-        franchiseResponseDTO = new FranchiseResponseDTO().fromData(mockFranchise);
+        areaResponseDTO = AreaResponseDTO.fromData(mockArea);
+        franchiseResponseDTO = FranchiseResponseDTO.fromData(mockFranchise);
 
         interventionResponseDTOs = linkedInterventions
                 .stream()
-                .map(intervention -> new InterventionResponseDTO().fromData(intervention))
+                .map(InterventionResponseDTO::fromData)
                 .collect(Collectors.toList());
 
         locationResponseDTO = new LocationResponseDTO(id, name, longitude, latitude, radius, areaResponseDTO, franchiseResponseDTO, delay, interventionResponseDTOs);
@@ -149,6 +174,28 @@ public class LocationServiceImplTest {
 
         // Act/Assert
         assertThrows(NotFoundException.class, () -> sut.createLocation(createLocationRequestDTO));
+    }
+
+    @Test
+    public void testCreateChecksFranchiseExists() {
+        // Arrange
+        Mockito.when(franchiseDAOFixture.getFranchiseById(franchiseId)).thenReturn(null);
+        Mockito.when(locationDAOFixture.getLocationById(id)).thenReturn(mockLocation);
+        Mockito.when(areaDAOFixture.getAreaById(areaId)).thenReturn(mockArea);
+
+        // Act/Assert
+        assertThrows(NotFoundException.class, () -> sut.createLocation(createLocationRequestDTO));
+    }
+
+    @Test
+    public void testUpdateChecksFranchiseExists() {
+        // Arrange
+        Mockito.when(franchiseDAOFixture.getFranchiseById(franchiseId)).thenReturn(null);
+        Mockito.when(areaDAOFixture.getAreaById(areaId)).thenReturn(mockArea);
+        Mockito.when(locationDAOFixture.getLocationById(id)).thenReturn(mockLocation);
+
+        // Act/Assert
+        assertThrows(NotFoundException.class, () -> sut.updateLocation(updateLocationRequestDTO));
     }
 
     @Test

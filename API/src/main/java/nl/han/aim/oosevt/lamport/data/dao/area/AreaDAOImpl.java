@@ -7,9 +7,12 @@ import org.springframework.stereotype.Component;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Component
 public class AreaDAOImpl implements AreaDAO {
+    private static final Logger LOGGER = Logger.getLogger(AreaDAOImpl.class.getName());
 
     @Override
     public void createArea(String name, double longitude, double latitude, int radius) {
@@ -21,7 +24,7 @@ public class AreaDAOImpl implements AreaDAO {
             statement.setInt(4, radius);
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "createArea::A database error occurred!", e);
         }
     }
 
@@ -33,17 +36,12 @@ public class AreaDAOImpl implements AreaDAO {
 
             List<Area> foundAreas = new ArrayList<>();
             while (resultSet.next()) {
-                foundAreas.add(new Area(
-                        resultSet.getInt("area_id"),
-                        resultSet.getString("area_name"),
-                        resultSet.getDouble("longitude"),
-                        resultSet.getDouble("latitude"),
-                        resultSet.getInt("radius")));
+                foundAreas.add(getAreaFromResultSet(resultSet));
             }
             return foundAreas;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "getAreas::A database error occurred!", e);
         }
         return new ArrayList<>();
     }
@@ -56,16 +54,11 @@ public class AreaDAOImpl implements AreaDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    return new Area(
-                            resultSet.getInt("area_id"),
-                            resultSet.getString("area_name"),
-                            resultSet.getDouble("longitude"),
-                            resultSet.getDouble("latitude"),
-                            resultSet.getInt("radius"));
+                    return getAreaFromResultSet(resultSet);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "getAreaById::A database error occurred!", e);
         }
         return null;
     }
@@ -81,7 +74,7 @@ public class AreaDAOImpl implements AreaDAO {
             statement.setInt(5, radius);
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "updateArea::A database error occurred!", e);
         }
     }
 
@@ -92,7 +85,21 @@ public class AreaDAOImpl implements AreaDAO {
             statement.setInt(1, areaId);
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "deleteArea::A database error occurred!", e);
         }
+    }
+
+    private Area getAreaFromResultSet(ResultSet resultSet) {
+        try {
+            return new Area(
+                    resultSet.getInt("area_id"),
+                    resultSet.getString("area_name"),
+                    resultSet.getDouble("longitude"),
+                    resultSet.getDouble("latitude"),
+                    resultSet.getInt("radius"));
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "getAreaFromResultSet::A database error occurred!", e);
+        }
+        return null;
     }
 }

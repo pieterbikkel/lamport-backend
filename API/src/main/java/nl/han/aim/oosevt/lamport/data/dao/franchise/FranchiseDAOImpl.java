@@ -7,9 +7,12 @@ import org.springframework.stereotype.Component;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Component
 public class FranchiseDAOImpl implements FranchiseDAO {
+    private static final Logger LOGGER = Logger.getLogger(FranchiseDAOImpl.class.getName());
 
     @Override
     public void createFranchise(String name) {
@@ -18,7 +21,7 @@ public class FranchiseDAOImpl implements FranchiseDAO {
             statement.setString(1, name);
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "createFranchise::A database error occurred!", e);
         }
     }
 
@@ -36,7 +39,7 @@ public class FranchiseDAOImpl implements FranchiseDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "getFranchiseById::A database error occurred!", e);
         }
         return null;
     }
@@ -56,7 +59,7 @@ public class FranchiseDAOImpl implements FranchiseDAO {
             return foundFranchises;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "getFranchises::A database error occurred!", e);
         }
         return new ArrayList<>();
     }
@@ -69,7 +72,7 @@ public class FranchiseDAOImpl implements FranchiseDAO {
             statement.setString(2, name);
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "updateFranchise::A database error occurred!", e);
         }
     }
 
@@ -80,7 +83,7 @@ public class FranchiseDAOImpl implements FranchiseDAO {
             statement.setInt(1, franchiseId);
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "deleteFranchise::A database error occurred!", e);
         }
     }
 }
