@@ -106,4 +106,11 @@ public class LocationServiceImpl implements LocationService {
                 .map(LocationResponseDTO::fromData)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<LocationResponseDTO> getLocationsBySearch(String query) {
+        return locationDAO.getLocationsBySearch(query).stream()
+                .map(LocationResponseDTO::fromData)
+                .collect(Collectors.toList());
+    }
 }

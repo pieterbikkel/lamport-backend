@@ -11,5 +11,6 @@ public interface AreaService {
     void updateArea(UpdateAreaRequestDTO updateAreaRequestDTO);
     void deleteArea(int id);
     AreaResponseDTO getArea(int id);
+    List<AreaResponseDTO> getAreasBySearch(String query);
     List<AreaResponseDTO> getAreas();
 }

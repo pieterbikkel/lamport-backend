@@ -42,6 +42,32 @@ public class RoleDAOImpl implements RoleDAO {
     }
 
     @Override
+    public List<Role> getRolesBySearch(String query) {
+        try (
+            Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
+            PreparedStatement statement = connection.prepareStatement("CALL getRolesBySearch(?)")
+        ) {
+            statement.setString(1, query);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<Role> roles = new ArrayList<>();
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("role_id");
+                    String name = resultSet.getString("role_name");
+
+                    Role role = new Role(id, name, getRolePermissions(connection, id));
+
+                    roles.add(role);
+                }
+                return roles;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "getRoles::A database error occurred!", e);
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
     public Role getRoleById(int id) {
         try (Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
              PreparedStatement statement = connection.prepareStatement("CALL getRoleById(?)")) {

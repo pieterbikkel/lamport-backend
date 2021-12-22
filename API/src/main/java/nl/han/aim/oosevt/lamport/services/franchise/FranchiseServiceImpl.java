@@ -66,4 +66,13 @@ public class FranchiseServiceImpl implements FranchiseService {
                 .map(FranchiseResponseDTO::fromData)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<FranchiseResponseDTO> getFranchisesBySearch(String query) {
+        return franchiseDAO
+                .getFranchisesBySearch(query)
+                .stream()
+                .map(FranchiseResponseDTO::fromData)
+                .collect(Collectors.toList());
+    }
 }

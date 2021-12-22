@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface UserService {
     List<UserResponseDTO> getUsers();
+    List<UserResponseDTO> getUsersBySearch(String query);
     UserResponseDTO getUserById(int id);
     void updateUser(UpdateUserRequestDTO updateUserRequestDTO);
     void createUser(CreateUserRequestDTO create);

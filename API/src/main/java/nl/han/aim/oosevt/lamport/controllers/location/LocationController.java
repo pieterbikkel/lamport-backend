@@ -33,6 +33,15 @@ public class LocationController {
         );
     }
 
+    @GetMapping("/zoeken/{search}")
+    @Permission(permission = Permissions.GET_LOCATIONS)
+    public ResponseEntity<List<LocationResponseDTO>> getLocationsBySearch(@PathVariable("search") String query) {
+        return new ResponseEntity<>(
+                locationService.getLocationsBySearch(query),
+                HttpStatus.OK
+        );
+    }
+
     @GetMapping("{id}")
     @Permission(permission = Permissions.GET_LOCATIONS)
     public ResponseEntity<LocationResponseDTO> getLocation(@PathVariable("id") int id) {

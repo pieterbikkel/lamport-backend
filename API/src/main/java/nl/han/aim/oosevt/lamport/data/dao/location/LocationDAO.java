@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface LocationDAO {
     void createLocation(String name, int delay, double longitude, double latitude, int radius, int areaId, int franchiseId, List<Integer> linkedInterventions);
+    List<Location> getLocationsBySearch(String query);
     Location getLocationById(int id);
     List<Location> getLocations();
     void updateLocation(int id, String name, int delay, double longitude, double latitude, int radius, int areaId, int franchiseId, List<Integer> linkedInterventions);

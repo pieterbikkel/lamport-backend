@@ -64,4 +64,13 @@ public class GoalServiceImpl implements GoalService {
         assertGoalExists(id);
         goalDAO.deleteGoal(id);
     }
+
+    @Override
+    public List<GoalResponseDTO> getGoalsBySearch(String query) {
+        return goalDAO
+                .getGoalsBySearch(query)
+                .stream()
+                .map(GoalResponseDTO::fromData)
+                .collect(Collectors.toList());
+    }
 }

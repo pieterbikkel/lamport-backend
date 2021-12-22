@@ -66,6 +66,30 @@ public class GoalDAOImpl implements GoalDAO {
     }
 
     @Override
+    public List<Goal> getGoalsBySearch(String query) {
+        try (
+            Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
+            PreparedStatement statement = connection.prepareStatement("CALL getGoalsBySearch(?)");
+         ) {
+            statement.setString(1, query);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<Goal> getGoals = new ArrayList<>();
+                while (resultSet.next()) {
+                    getGoals.add(new Goal(
+                            resultSet.getInt("goal_id"),
+                            resultSet.getString("goal_name")));
+                }
+                return getGoals;
+            }
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "getGoals::A database error occurred!", e);
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
     public void updateGoal(int goalId, String name) {
         try (Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
              PreparedStatement statement = connection.prepareStatement("CALL updateGoal(?, ?)")) {

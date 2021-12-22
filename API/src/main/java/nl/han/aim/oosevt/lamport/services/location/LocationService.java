@@ -12,4 +12,5 @@ public interface LocationService {
     void deleteLocation(int id);
     LocationResponseDTO getLocation(int id);
     List<LocationResponseDTO> getLocations();
+    List<LocationResponseDTO> getLocationsBySearch(String query);
 }

@@ -90,4 +90,13 @@ public class RoleServiceImpl implements RoleService {
 
         return RoleResponseDTO.fromData(role);
     }
+
+    @Override
+    public List<RoleResponseDTO> getRolesBySearch(String query) {
+        return roleDAO
+                .getRolesBySearch(query)
+                .stream()
+                .map(RoleResponseDTO::fromData)
+                .collect(Collectors.toList());
+    }
 }

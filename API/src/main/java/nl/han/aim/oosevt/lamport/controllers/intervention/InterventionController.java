@@ -37,6 +37,17 @@ public class InterventionController {
         );
     }
 
+
+
+    @GetMapping("/zoeken/{search}")
+    @Permission(permission = Permissions.GET_INTERVENTIONS)
+    public ResponseEntity<List<InterventionResponseDTO>> getInterventionsBySearch(@PathVariable("search") String query) {
+        return new ResponseEntity<>(
+                interventionService.getInterventionsBySearch(query),
+                HttpStatus.OK
+        );
+    }
+
     @PutMapping()
     @Permission(permission = Permissions.UPDATE_INTERVENTIONS)
     public void updateIntervention(@RequestBody UpdateCommandRequestDTO updateCommandRequestDTO) {

@@ -12,4 +12,5 @@ public interface FranchiseService {
     void deleteFranchise(int id);
     FranchiseResponseDTO getFranchiseById(int id);
     List<FranchiseResponseDTO> getFranchises();
+    List<FranchiseResponseDTO> getFranchisesBySearch(String query);
 }

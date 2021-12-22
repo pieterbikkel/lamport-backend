@@ -60,6 +60,12 @@ public class AreaServiceImpl implements AreaService {
     }
 
     @Override
+    public List<AreaResponseDTO> getAreasBySearch(String query) {
+        return this.areaDAO.getAreasBySearch(query).stream().map(AreaResponseDTO::fromData)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<AreaResponseDTO> getAreas() {
 
         return this.areaDAO.getAreas().stream().map(AreaResponseDTO::fromData)

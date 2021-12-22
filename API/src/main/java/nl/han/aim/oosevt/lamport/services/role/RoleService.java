@@ -14,4 +14,5 @@ public interface RoleService {
     void deleteRole(int id);
     void createRole(CreateRoleRequestDTO createRoleRequestDTO);
     RoleResponseDTO getRoleById(int id);
+    List<RoleResponseDTO> getRolesBySearch(String query);
 }

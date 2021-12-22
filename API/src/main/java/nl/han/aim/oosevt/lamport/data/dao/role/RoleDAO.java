@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface RoleDAO {
     List<Role> getRoles();
+    List<Role> getRolesBySearch(String query);
     Role getRoleById(int id);
     void updateRole(int id, String name, List<String> allowedPermissions);
     void deleteRole(int id);

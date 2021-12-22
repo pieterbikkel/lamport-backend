@@ -12,4 +12,5 @@ public interface GoalService {
     void createGoal(CreateGoalRequestDTO createGoalRequestDTO);
     void updateGoal(UpdateGoalRequestDTO updateGoalRequestDTO);
     void deleteGoal(int id);
+    List<GoalResponseDTO> getGoalsBySearch(String query);
 }

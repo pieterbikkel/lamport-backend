@@ -176,6 +176,30 @@ public class InterventionDAOImpl implements InterventionDAO {
     }
 
     @Override
+    public List<Intervention> getInterventionsBySearch(String query) {
+        try (
+            Connection connection = DriverManager.getConnection(connectionString());
+            PreparedStatement statement = connection.prepareStatement("CALL getInterventionsBySearch(?)")
+        ) {
+            statement.setString(1, query);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<Intervention> foundInterventions = new ArrayList<>();
+                while (resultSet.next()) {
+                    foundInterventions.add(interventionFromResultSet(resultSet, connection));
+                }
+
+                return foundInterventions;
+            }
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "getInterventionsByLocationId::A database error occurred!", e);
+        }
+
+        return new ArrayList<>();
+    }
+
+    @Override
     public void updateCommand(int id, String name, String command) {
         try (Connection connection = DriverManager.getConnection(connectionString());
              PreparedStatement statement = connection.prepareStatement("CALL updateCommand(?, ?, ?)")) {

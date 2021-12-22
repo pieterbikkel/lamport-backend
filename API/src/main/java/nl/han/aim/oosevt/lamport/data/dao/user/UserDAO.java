@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface UserDAO {
     List<User> getUsers();
+    List<User> getUsersBySearch(String query);
     User getUserById(int id);
     User getUserByUsername(String username);
     void updateUser(int id, String username, String email, String password, int roleId);

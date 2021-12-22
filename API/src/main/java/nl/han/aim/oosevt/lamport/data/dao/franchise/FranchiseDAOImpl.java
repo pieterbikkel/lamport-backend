@@ -45,6 +45,29 @@ public class FranchiseDAOImpl implements FranchiseDAO {
     }
 
     @Override
+    public List<Franchise> getFranchisesBySearch(String query) {
+        try (
+            Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
+            PreparedStatement statement = connection.prepareStatement("CALL getFranchisesBySearch(?)")
+         ) {
+            statement.setString(1, query);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<Franchise> foundFranchises = new ArrayList<>();
+                while (resultSet.next()) {
+                    foundFranchises.add(new Franchise(
+                            resultSet.getInt("franchise_id"),
+                            resultSet.getString("franchise_name")));
+                }
+                return foundFranchises;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "getFranchises::A database error occurred!", e);
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
     public List<Franchise> getFranchises() {
         try (Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
              PreparedStatement statement = connection.prepareStatement("CALL getFranchises()");

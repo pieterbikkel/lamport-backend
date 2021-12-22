@@ -48,6 +48,15 @@ public class GoalController {
         goalService.updateGoal(updateGoalRequestDTO);
     }
 
+    @GetMapping("/zoeken/{search}")
+    @Permission(permission = Permissions.GET_GOALS)
+    public ResponseEntity<List<GoalResponseDTO>> getGoalsBySearch(@PathVariable("search") String query) {
+        return new ResponseEntity<>(
+                goalService.getGoalsBySearch(query),
+                HttpStatus.OK
+        );
+    }
+
     @PostMapping()
     @Permission(permission = Permissions.CREATE_GOALS)
     public void createGoal(@RequestBody CreateGoalRequestDTO createGoalRequestDTO) {

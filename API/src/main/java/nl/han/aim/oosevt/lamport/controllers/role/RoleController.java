@@ -34,6 +34,15 @@ public class RoleController {
         );
     }
 
+    @GetMapping("/zoeken/{search}")
+    @Permission(permission = Permissions.GET_ROLES)
+    public ResponseEntity<List<RoleResponseDTO>> getRolesBySearch(@PathVariable("search") String query) {
+        return new ResponseEntity<>(
+                roleService.getRolesBySearch(query),
+                HttpStatus.OK
+        );
+    }
+
     @DeleteMapping("{id}")
     public void deleteRole(@PathVariable("id") int id) {
         roleService.deleteRole(id);

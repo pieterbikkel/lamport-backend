@@ -47,6 +47,27 @@ public class AreaDAOImpl implements AreaDAO {
     }
 
     @Override
+    public List<Area> getAreasBySearch(String query) {
+        try (
+             Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
+             PreparedStatement statement = connection.prepareStatement("CALL getAreasBySearch(?)")
+         ) {
+            statement.setString(1, query);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<Area> foundAreas = new ArrayList<>();
+                while (resultSet.next()) {
+                    foundAreas.add(getAreaFromResultSet(resultSet));
+                }
+                return foundAreas;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "getAreas::A database error occurred!", e);
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
     public Area getAreaById(int areaId) {
         try (Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
              PreparedStatement statement = connection.prepareStatement("CALL getAreaById(?)")) {

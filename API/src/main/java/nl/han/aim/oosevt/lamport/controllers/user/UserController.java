@@ -30,6 +30,15 @@ public class UserController {
         userService.updateUser(updateUserRequestDTO);
     }
 
+    @GetMapping("/zoeken/{search}")
+    @Permission(permission = Permissions.GET_USERS)
+    public ResponseEntity<List<UserResponseDTO>> getUsersBySearch(@PathVariable("search") String query) {
+        return new ResponseEntity<>(
+                userService.getUsersBySearch(query),
+                HttpStatus.OK
+        );
+    }
+
     @GetMapping("")
     @Permission(permission = Permissions.GET_USERS)
     public ResponseEntity<List<UserResponseDTO>> getUsers() {

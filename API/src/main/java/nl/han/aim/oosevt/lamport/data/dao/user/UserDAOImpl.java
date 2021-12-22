@@ -45,6 +45,27 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    public List<User> getUsersBySearch(String query) {
+        try (
+            Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
+            PreparedStatement statement = connection.prepareStatement("CALL getUsersBySearch(?)");
+         ) {
+            statement.setString(1, query);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<User> getUsers = new ArrayList<>();
+                while (resultSet.next()) {
+                    getUsers.add(getUserFromResultSet(resultSet));
+                }
+                return getUsers;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "getUsers::A database error occurred!", e);
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
     public User getUserById(int id) {
         try (Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
                 PreparedStatement statement = connection.prepareStatement("CALL getUserById(?)")) {

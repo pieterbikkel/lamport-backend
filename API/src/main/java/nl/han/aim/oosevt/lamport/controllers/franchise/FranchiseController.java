@@ -42,6 +42,15 @@ public class FranchiseController {
         );
     }
 
+    @GetMapping("/zoeken/{search}")
+    @Permission(permission = Permissions.GET_FRANCHISES)
+    public ResponseEntity<List<FranchiseResponseDTO>> getFranchisesBySearch(@PathVariable("search") String query) {
+        return new ResponseEntity<>(
+                franchiseService.getFranchisesBySearch(query),
+                HttpStatus.OK
+        );
+    }
+
     @DeleteMapping("{id}")
     @Permission(permission = Permissions.DELETE_FRANCHISES)
     public void deleteFranchise(@PathVariable("id") int id) {

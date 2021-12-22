@@ -172,6 +172,15 @@ public class InterventionServiceImpl implements InterventionService {
     }
 
     @Override
+    public List<InterventionResponseDTO> getInterventionsBySearch(String query) {
+        return interventionDAO
+                .getInterventionsBySearch(query)
+                .stream()
+                .map(InterventionResponseDTO::fromData)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public InterventionResponseDTO getInterventionById(int id) {
         Intervention intervention = interventionDAO.getInterventionById(id);
 

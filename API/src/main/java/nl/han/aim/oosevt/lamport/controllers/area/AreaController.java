@@ -42,6 +42,15 @@ public class AreaController {
         );
     }
 
+    @GetMapping("/zoeken/{search}")
+    @Permission(permission = Permissions.GET_AREAS)
+    public ResponseEntity<List<AreaResponseDTO>> getAreasBySearch(@PathVariable("search") String query) {
+        return new ResponseEntity<>(
+                areaService.getAreasBySearch(query),
+                HttpStatus.OK
+        );
+    }
+
     @DeleteMapping("{id}")
     @Permission(permission = Permissions.DELETE_AREAS)
     public void deleteArea(@PathVariable("id") int id) {

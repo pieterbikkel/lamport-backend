@@ -38,6 +38,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserResponseDTO> getUsersBySearch(String query) {
+        return userDAO
+                .getUsersBySearch(query)
+                .stream()
+                .map(UserResponseDTO::fromData)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public UserResponseDTO getUserById(int id) {
         final User user = userDAO.getUserById(id);
 

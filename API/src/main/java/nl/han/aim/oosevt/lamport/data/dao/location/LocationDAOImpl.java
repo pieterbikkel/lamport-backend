@@ -81,6 +81,32 @@ public class LocationDAOImpl implements LocationDAO {
     }
 
     @Override
+    public List<Location> getLocationsBySearch(String query) {
+        try (
+                Connection connection = DriverManager.getConnection(connectionString());
+                PreparedStatement statement = connection.prepareStatement("CALL getLocationsBySearch(?)")
+        ) {
+                statement.setString(1, query);
+
+                try(ResultSet resultSet = statement.executeQuery()) {
+
+                    List<Location> foundLocations = new ArrayList<>();
+
+                    while (resultSet.next()) {
+                        final Location foundLocation = locationFromResultSet(resultSet);
+                        foundLocations.add(foundLocation);
+                    }
+
+                    return foundLocations;
+                }
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "getLocations::A database error occurred!", e);
+            }
+
+        return new ArrayList<>();
+    }
+
+    @Override
     public Location getLocationById(int locationId) {
         try (Connection connection = DriverManager.getConnection(connectionString());
              PreparedStatement statement = connection.prepareStatement("CALL getLocationById(?)")) {
