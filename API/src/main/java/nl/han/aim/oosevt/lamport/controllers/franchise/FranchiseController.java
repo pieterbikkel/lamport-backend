@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/franchise")
@@ -26,9 +27,9 @@ public class FranchiseController {
 
     @GetMapping("")
     @Permission(permission = Permissions.GET_FRANCHISES)
-    public ResponseEntity<List<FranchiseResponseDTO>> getFranchises() {
+    public ResponseEntity<List<FranchiseResponseDTO>> getFranchises(@RequestParam("search") Optional<String> query) {
         return new ResponseEntity<>(
-                franchiseService.getFranchises(),
+                query.isPresent() ? franchiseService.getFranchisesBySearch(query.get()) : franchiseService.getFranchises(),
                 HttpStatus.OK
         );
     }
@@ -38,15 +39,6 @@ public class FranchiseController {
     public ResponseEntity<FranchiseResponseDTO> getFranchise(@PathVariable("id") int id) {
         return new ResponseEntity<>(
                 franchiseService.getFranchiseById(id),
-                HttpStatus.OK
-        );
-    }
-
-    @GetMapping("/zoeken/{search}")
-    @Permission(permission = Permissions.GET_FRANCHISES)
-    public ResponseEntity<List<FranchiseResponseDTO>> getFranchisesBySearch(@PathVariable("search") String query) {
-        return new ResponseEntity<>(
-                franchiseService.getFranchisesBySearch(query),
                 HttpStatus.OK
         );
     }

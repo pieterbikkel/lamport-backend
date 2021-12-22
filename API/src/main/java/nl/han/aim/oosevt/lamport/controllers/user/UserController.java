@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -30,20 +31,11 @@ public class UserController {
         userService.updateUser(updateUserRequestDTO);
     }
 
-    @GetMapping("/zoeken/{search}")
-    @Permission(permission = Permissions.GET_USERS)
-    public ResponseEntity<List<UserResponseDTO>> getUsersBySearch(@PathVariable("search") String query) {
-        return new ResponseEntity<>(
-                userService.getUsersBySearch(query),
-                HttpStatus.OK
-        );
-    }
-
     @GetMapping("")
     @Permission(permission = Permissions.GET_USERS)
-    public ResponseEntity<List<UserResponseDTO>> getUsers() {
+    public ResponseEntity<List<UserResponseDTO>> getUsers(@RequestParam("search") Optional<String> query) {
         return new ResponseEntity<>(
-                userService.getUsers(),
+                query.isPresent() ? userService.getUsersBySearch(query.get()) : userService.getUsers(),
                 HttpStatus.OK
         );
     }

@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/interventions")
@@ -30,20 +31,9 @@ public class InterventionController {
 
     @GetMapping("")
     @Permission(permission = Permissions.GET_INTERVENTIONS)
-    public ResponseEntity<List<InterventionResponseDTO>> getInterventions() {
+    public ResponseEntity<List<InterventionResponseDTO>> getInterventions(@RequestParam("search") Optional<String> query) {
         return new ResponseEntity<>(
-                interventionService.getInterventions(),
-                HttpStatus.OK
-        );
-    }
-
-
-
-    @GetMapping("/zoeken/{search}")
-    @Permission(permission = Permissions.GET_INTERVENTIONS)
-    public ResponseEntity<List<InterventionResponseDTO>> getInterventionsBySearch(@PathVariable("search") String query) {
-        return new ResponseEntity<>(
-                interventionService.getInterventionsBySearch(query),
+                query.isPresent() ? interventionService.getInterventionsBySearch(query.get()) : interventionService.getInterventions(),
                 HttpStatus.OK
         );
     }
@@ -55,6 +45,7 @@ public class InterventionController {
     }
 
     @GetMapping("{id}")
+    @Permission(permission = Permissions.GET_INTERVENTIONS)
     public ResponseEntity<InterventionResponseDTO> getIntervention(@PathVariable("id") int id) {
         return new ResponseEntity<>(
                 interventionService.getInterventionById(id),

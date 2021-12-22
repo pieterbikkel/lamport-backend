@@ -40,9 +40,7 @@ public class RoleDAOImpl implements RoleDAO {
         final int id = resultSet.getInt("role_id");
         final String name = resultSet.getString("role_name");
 
-        Role role = new Role(id, name, getRolePermissions(connection, id));
-
-        return role;
+        return new Role(id, name, getRolePermissions(connection, id));
     }
 
     @Override

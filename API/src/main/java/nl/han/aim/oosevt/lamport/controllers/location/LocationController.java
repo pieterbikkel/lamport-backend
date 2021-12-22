@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/locations")
@@ -26,18 +27,9 @@ public class LocationController {
 
     @GetMapping("")
     @Permission(permission = Permissions.GET_LOCATIONS)
-    public ResponseEntity<List<LocationResponseDTO>> getLocations() {
+    public ResponseEntity<List<LocationResponseDTO>> getLocations(@RequestParam("search") Optional<String> query) {
         return new ResponseEntity<>(
-                locationService.getLocations(),
-                HttpStatus.OK
-        );
-    }
-
-    @GetMapping("/zoeken/{search}")
-    @Permission(permission = Permissions.GET_LOCATIONS)
-    public ResponseEntity<List<LocationResponseDTO>> getLocationsBySearch(@PathVariable("search") String query) {
-        return new ResponseEntity<>(
-                locationService.getLocationsBySearch(query),
+                query.isPresent() ? locationService.getLocationsBySearch(query.get()) : locationService.getLocations(),
                 HttpStatus.OK
         );
     }

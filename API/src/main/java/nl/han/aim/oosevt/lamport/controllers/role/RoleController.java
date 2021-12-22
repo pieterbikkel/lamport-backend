@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/roles")
@@ -27,18 +28,9 @@ public class RoleController {
 
     @GetMapping("")
     @Permission(permission = Permissions.GET_ROLES)
-    public ResponseEntity<List<RoleResponseDTO>> getRoles() {
+    public ResponseEntity<List<RoleResponseDTO>> getRoles(@RequestParam("search") Optional<String> query) {
         return new ResponseEntity<>(
-                roleService.getRoles(),
-                HttpStatus.OK
-        );
-    }
-
-    @GetMapping("/zoeken/{search}")
-    @Permission(permission = Permissions.GET_ROLES)
-    public ResponseEntity<List<RoleResponseDTO>> getRolesBySearch(@PathVariable("search") String query) {
-        return new ResponseEntity<>(
-                roleService.getRolesBySearch(query),
+                query.isPresent() ? roleService.getRolesBySearch(query.get()) : roleService.getRoles(),
                 HttpStatus.OK
         );
     }

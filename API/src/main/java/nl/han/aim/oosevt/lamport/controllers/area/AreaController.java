@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/areas")
@@ -33,20 +34,11 @@ public class AreaController {
         );
     }
 
-    @GetMapping("{id}")
+    @GetMapping("")
     @Permission(permission = Permissions.GET_AREAS)
-    public ResponseEntity<AreaResponseDTO> getArea(@PathVariable("id") int id) {
+    public ResponseEntity<List<AreaResponseDTO>> getAreas(@RequestParam("search") Optional<String> query) {
         return new ResponseEntity<>(
-                areaService.getArea(id),
-                HttpStatus.OK
-        );
-    }
-
-    @GetMapping("/zoeken/{search}")
-    @Permission(permission = Permissions.GET_AREAS)
-    public ResponseEntity<List<AreaResponseDTO>> getAreasBySearch(@PathVariable("search") String query) {
-        return new ResponseEntity<>(
-                areaService.getAreasBySearch(query),
+                query.isPresent() ? areaService.getAreasBySearch(query.get()) : areaService.getAreas(),
                 HttpStatus.OK
         );
     }

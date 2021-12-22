@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/goals")
@@ -26,9 +27,9 @@ public class GoalController {
 
     @GetMapping("")
     @Permission(permission = Permissions.GET_GOALS)
-    public ResponseEntity<List<GoalResponseDTO>> getGoals() {
+    public ResponseEntity<List<GoalResponseDTO>> getGoals(@RequestParam("search") Optional<String> query) {
         return new ResponseEntity<>(
-                goalService.getGoals(),
+                query.isPresent() ? goalService.getGoalsBySearch(query.get()) : goalService.getGoals(),
                 HttpStatus.OK
         );
     }
@@ -46,15 +47,6 @@ public class GoalController {
     @Permission(permission = Permissions.UPDATE_GOALS)
     public void updateGoal(@RequestBody UpdateGoalRequestDTO updateGoalRequestDTO) {
         goalService.updateGoal(updateGoalRequestDTO);
-    }
-
-    @GetMapping("/zoeken/{search}")
-    @Permission(permission = Permissions.GET_GOALS)
-    public ResponseEntity<List<GoalResponseDTO>> getGoalsBySearch(@PathVariable("search") String query) {
-        return new ResponseEntity<>(
-                goalService.getGoalsBySearch(query),
-                HttpStatus.OK
-        );
     }
 
     @PostMapping()
