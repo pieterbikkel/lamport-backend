@@ -193,7 +193,7 @@ public class InterventionDAOImpl implements InterventionDAO {
             }
 
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "getInterventionsByLocationId::A database error occurred!", e);
+            LOGGER.log(Level.SEVERE, "getInterventionsBySearch::A database error occurred!", e);
         }
 
         return new ArrayList<>();

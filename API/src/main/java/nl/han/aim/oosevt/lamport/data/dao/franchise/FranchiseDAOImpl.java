@@ -14,6 +14,13 @@ import java.util.logging.Logger;
 public class FranchiseDAOImpl implements FranchiseDAO {
     private static final Logger LOGGER = Logger.getLogger(FranchiseDAOImpl.class.getName());
 
+    private Franchise franchiseFromResultSet(ResultSet resultSet) throws SQLException {
+        return new Franchise(
+                resultSet.getInt("franchise_id"),
+                resultSet.getString("franchise_name")
+        );
+    }
+
     @Override
     public void createFranchise(String name) {
         try (Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
@@ -33,9 +40,7 @@ public class FranchiseDAOImpl implements FranchiseDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    return new Franchise(
-                            resultSet.getInt("franchise_id"),
-                            resultSet.getString("franchise_name"));
+                    return franchiseFromResultSet(resultSet);
                 }
             }
         } catch (SQLException e) {
@@ -55,14 +60,12 @@ public class FranchiseDAOImpl implements FranchiseDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 List<Franchise> foundFranchises = new ArrayList<>();
                 while (resultSet.next()) {
-                    foundFranchises.add(new Franchise(
-                            resultSet.getInt("franchise_id"),
-                            resultSet.getString("franchise_name")));
+                    foundFranchises.add(franchiseFromResultSet(resultSet));
                 }
                 return foundFranchises;
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "getFranchises::A database error occurred!", e);
+            LOGGER.log(Level.SEVERE, "getFranchisesBySearch::A database error occurred!", e);
         }
         return new ArrayList<>();
     }
@@ -75,9 +78,7 @@ public class FranchiseDAOImpl implements FranchiseDAO {
 
             List<Franchise> foundFranchises = new ArrayList<>();
             while (resultSet.next()) {
-                foundFranchises.add(new Franchise(
-                        resultSet.getInt("franchise_id"),
-                        resultSet.getString("franchise_name")));
+                foundFranchises.add(franchiseFromResultSet(resultSet));
             }
             return foundFranchises;
 

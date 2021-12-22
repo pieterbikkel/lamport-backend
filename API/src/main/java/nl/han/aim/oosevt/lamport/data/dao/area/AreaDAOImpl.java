@@ -62,7 +62,7 @@ public class AreaDAOImpl implements AreaDAO {
                 return foundAreas;
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "getAreas::A database error occurred!", e);
+            LOGGER.log(Level.SEVERE, "getAreasBySearch::A database error occurred!", e);
         }
         return new ArrayList<>();
     }

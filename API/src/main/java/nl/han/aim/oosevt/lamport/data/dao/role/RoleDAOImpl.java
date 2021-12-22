@@ -26,12 +26,7 @@ public class RoleDAOImpl implements RoleDAO {
         ) {
             List<Role> roles = new ArrayList<>();
             while (resultSet.next()) {
-                int id = resultSet.getInt("role_id");
-                String name = resultSet.getString("role_name");
-
-                Role role = new Role(id, name, getRolePermissions(connection, id));
-
-                roles.add(role);
+                roles.add(roleFromResultSet(resultSet, connection));
             }
             return roles;
 
@@ -39,6 +34,15 @@ public class RoleDAOImpl implements RoleDAO {
             LOGGER.log(Level.SEVERE, "getRoles::A database error occurred!", e);
         }
         return new ArrayList<>();
+    }
+
+    private Role roleFromResultSet(ResultSet resultSet, Connection connection) throws SQLException {
+        final int id = resultSet.getInt("role_id");
+        final String name = resultSet.getString("role_name");
+
+        Role role = new Role(id, name, getRolePermissions(connection, id));
+
+        return role;
     }
 
     @Override
@@ -52,17 +56,12 @@ public class RoleDAOImpl implements RoleDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 List<Role> roles = new ArrayList<>();
                 while (resultSet.next()) {
-                    int id = resultSet.getInt("role_id");
-                    String name = resultSet.getString("role_name");
-
-                    Role role = new Role(id, name, getRolePermissions(connection, id));
-
-                    roles.add(role);
+                    roles.add(roleFromResultSet(resultSet, connection));
                 }
                 return roles;
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "getRoles::A database error occurred!", e);
+            LOGGER.log(Level.SEVERE, "getRolesBySearch::A database error occurred!", e);
         }
         return new ArrayList<>();
     }
@@ -76,10 +75,7 @@ public class RoleDAOImpl implements RoleDAO {
             try(ResultSet resultSet = statement.executeQuery()) {
                 if(resultSet.next()) {
                     final int roleId = resultSet.getInt("role_id");
-                    return new Role(
-                            roleId,
-                            resultSet.getString("role_name"),
-                            getRolePermissions(connection, roleId));
+                    return roleFromResultSet(resultSet, connection);
                 }
             }
         } catch (SQLException e) {

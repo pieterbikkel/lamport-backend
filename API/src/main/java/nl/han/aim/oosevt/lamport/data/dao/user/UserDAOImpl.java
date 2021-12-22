@@ -60,7 +60,7 @@ public class UserDAOImpl implements UserDAO {
                 return getUsers;
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "getUsers::A database error occurred!", e);
+            LOGGER.log(Level.SEVERE, "getUsersBySearch::A database error occurred!", e);
         }
         return new ArrayList<>();
     }

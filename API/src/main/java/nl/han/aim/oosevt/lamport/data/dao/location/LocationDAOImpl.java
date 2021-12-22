@@ -100,7 +100,7 @@ public class LocationDAOImpl implements LocationDAO {
                     return foundLocations;
                 }
             } catch (SQLException e) {
-                LOGGER.log(Level.SEVERE, "getLocations::A database error occurred!", e);
+                LOGGER.log(Level.SEVERE, "getLocationsBySearch::A database error occurred!", e);
             }
 
         return new ArrayList<>();

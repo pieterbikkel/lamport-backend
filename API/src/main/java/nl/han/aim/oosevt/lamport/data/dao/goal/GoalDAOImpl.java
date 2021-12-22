@@ -15,6 +15,11 @@ public class GoalDAOImpl implements GoalDAO {
 
     private static final Logger LOGGER = Logger.getLogger(GoalDAOImpl.class.getName());
 
+    private Goal getGoalFromResultSet(ResultSet resultSet) throws SQLException {
+        return new Goal(resultSet.getInt("goal_id"),
+                resultSet.getString("goal_name"));
+    }
+
     @Override
     public void createGoal(String name) {
         try (Connection connection = DriverManager.getConnection(DatabaseProperties.connectionString());
@@ -34,9 +39,7 @@ public class GoalDAOImpl implements GoalDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    return new Goal(
-                            resultSet.getInt("goal_id"),
-                            resultSet.getString("goal_name"));
+                    return getGoalFromResultSet(resultSet);
                 }
             }
         } catch (SQLException e) {
@@ -53,9 +56,7 @@ public class GoalDAOImpl implements GoalDAO {
 
             List<Goal> getGoals = new ArrayList<>();
             while (resultSet.next()) {
-                getGoals.add(new Goal(
-                        resultSet.getInt("goal_id"),
-                        resultSet.getString("goal_name")));
+                getGoals.add(getGoalFromResultSet(resultSet));
             }
             return getGoals;
 
@@ -76,15 +77,13 @@ public class GoalDAOImpl implements GoalDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 List<Goal> getGoals = new ArrayList<>();
                 while (resultSet.next()) {
-                    getGoals.add(new Goal(
-                            resultSet.getInt("goal_id"),
-                            resultSet.getString("goal_name")));
+                    getGoals.add(getGoalFromResultSet(resultSet));
                 }
                 return getGoals;
             }
 
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "getGoals::A database error occurred!", e);
+            LOGGER.log(Level.SEVERE, "getGoalsBySearch::A database error occurred!", e);
         }
         return new ArrayList<>();
     }
