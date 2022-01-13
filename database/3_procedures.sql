@@ -4,23 +4,16 @@ DELIMITER //
 
 CREATE PROCEDURE getAreas()
 BEGIN
-	SELECT *
+    SELECT *
     FROM areaView;
 END //
 
-CREATE PROCEDURE getAreaById(IN param_id INT)
-BEGIN
-	SELECT *
-    FROM areaView
-    WHERE area_id = param_id;
-END //
-
-CREATE PROCEDURE getAreasBySearch(
-    IN query VARCHAR(255)
+CREATE PROCEDURE getAreaById (
+    IN param_id INT
 ) BEGIN
     SELECT *
     FROM areaView
-    WHERE area_name LIKE CONCAT("%", query, "%");
+    WHERE area_id = param_id;
 END //
 
 CREATE PROCEDURE getRoles()
@@ -37,14 +30,6 @@ CREATE PROCEDURE getRoleById (
     WHERE role_id = param_id;
 END //
 
-CREATE PROCEDURE getRolesBySearch(
-    IN query VARCHAR(255)
-) BEGIN
-    SELECT *
-    FROM roleView
-    WHERE role_name LIKE CONCAT("%", query, "%");
-END //
-
 CREATE PROCEDURE getPermissionsByRoleId (
     IN param_id INT
 ) BEGIN
@@ -56,7 +41,6 @@ END //
 CREATE PROCEDURE deleteRole (
     IN param_id INT
 ) BEGIN
-    DELETE FROM role_permissions WHERE role_id = param_id;
     DELETE FROM role WHERE role_id = param_id;
 END //
 
@@ -148,15 +132,6 @@ BEGIN
     FROM interventionView
     LEFT OUTER JOIN location_intervention ON location_intervention.intervention_id = interventionView.intervention_id
     WHERE location_intervention.location_id = param_location_id;
-END //
-
-CREATE PROCEDURE getInterventionsBySearch(
-    IN query VARCHAR(255)
-) BEGIN
-    SELECT *
-    FROM interventionView
-    WHERE intervention_name LIKE CONCAT("%", query, "%")
-    OR intervention_type = query;
 END //
 
 CREATE PROCEDURE createCommand (
@@ -329,16 +304,6 @@ CREATE PROCEDURE getLocationById(
     WHERE location_id = id;
 END //
 
-CREATE PROCEDURE getLocationsBySearch(
-    IN query VARCHAR(255)
-) BEGIN
-    SELECT *
-    FROM locationView
-    WHERE location_name LIKE CONCAT("%", query, "%")
-    OR area_name = query
-    OR franchise_name = query;
-END //
-
 CREATE PROCEDURE getLocations()
 BEGIN
     SELECT *
@@ -404,20 +369,20 @@ BEGIN
     FROM franchiseView;
 END //
 
-CREATE PROCEDURE getFranchisesBySearch(
-    IN query VARCHAR(255)
-) BEGIN
-    SELECT *
-    FROM franchiseView
-    WHERE franchise_name LIKE CONCAT("%", query, "%");
-END //
-
 CREATE PROCEDURE getUserCountByRoleId(
     IN param_id INT
 ) BEGIN
     SELECT COUNT(*) AS count
     FROM users
     WHERE role_id = param_id;
+END //
+
+CREATE PROCEDURE getUserCountByGoalId(
+    IN param_id INT
+) BEGIN
+    SELECT COUNT(*) AS count
+    FROM users
+    WHERE goal_id = param_id;
 END //
 
 CREATE PROCEDURE deleteFranchise(
@@ -458,24 +423,36 @@ BEGIN
     FROM goalView;
 END //
 
-CREATE PROCEDURE getGoalsBySearch(
-    IN query VARCHAR(255)
-) BEGIN
-    SELECT *
-    FROM goalView
-    WHERE goal_name LIKE CONCAT("%", query, "%");
-END //
-
 CREATE PROCEDURE createGoal(
     IN param_name VARCHAR(255)
 ) BEGIN
-    INSERT INTO goal(goal_name) VALUES (param_name);
+    INSERT INTO goal(goal_name)
+    VALUES (param_name);
+
+    SELECT LAST_INSERT_ID() AS goal_id;
 END //
 
 CREATE PROCEDURE deleteGoal(
     IN param_id INT
 ) BEGIN
-    DELETE FROM goal WHERE goal_id = param_id;
+    DELETE FROM goal
+    WHERE goal_id = param_id;
+END //
+
+CREATE PROCEDURE addProfileQuestionToGoal (
+    IN param_goal_id INT,
+    IN param_question VARCHAR(255)
+) BEGIN
+    INSERT INTO profile_question (goal_id, question)
+    VALUES (param_goal_id, param_question);
+END //
+
+CREATE PROCEDURE getProfileQuestionsByGoalId (
+    IN param_goal_id INT
+) BEGIN
+    SELECT *
+    FROM profileQuestionView
+    WHERE goal_id = param_goal_id;
 END //
 
 CREATE PROCEDURE updateGoal(
@@ -483,7 +460,11 @@ CREATE PROCEDURE updateGoal(
     IN param_name VARCHAR(255)
 ) BEGIN
     UPDATE goal
-        SET goal_name = param_name
+    SET goal_name = param_name
+    WHERE goal_id = param_id;
+
+    DELETE
+    FROM profile_question
     WHERE goal_id = param_id;
 END //
 
@@ -491,10 +472,11 @@ CREATE PROCEDURE createUser(
     IN param_name VARCHAR(255),
     IN param_email VARCHAR(255),
     IN param_password VARCHAR(255),
-    IN param_role_id INT
+    IN param_role_id INT,
+    IN param_goal_id INT
 ) BEGIN
-    INSERT INTO users(username, password, email, role_id)
-        VALUES(param_name, param_password, param_email, param_role_id);
+    INSERT INTO users(username, password, email, role_id, goal_id)
+        VALUES(param_name, param_password, param_email, param_role_id, param_goal_id);
 END //
 
 CREATE PROCEDURE getUsers()
@@ -519,31 +501,21 @@ CREATE PROCEDURE getUserByUsername (
     WHERE username = param_user_name;
 END //
 
-CREATE PROCEDURE getUsersBySearch(
-    IN query VARCHAR(255)
-) BEGIN
-    SET @queryWildcards = CONCAT("%", query, "%");
-
-    SELECT *
-    FROM userView
-    WHERE username LIKE @queryWildcards
-    OR email LIKE @queryWildcards
-    OR role_name = query;
-END //
-
 CREATE PROCEDURE updateUser (
     IN param_id INT,
     IN param_username VARCHAR(255),
     IN param_password VARCHAR(255),
     IN param_email VARCHAR(255),
-    IN param_role_id INT
+    IN param_role_id INT,
+    IN param_goal_id INT
 ) BEGIN
     UPDATE users
     SET 
         username = param_username,
         password = param_password,
         email = param_email,
-        role_id = param_role_id
+        role_id = param_role_id,
+        goal_id = param_goal_id
     WHERE user_id = param_id;
 END //
 

@@ -1,10 +1,12 @@
 package nl.han.aim.oosevt.lamport.services.auth;
 
 import nl.han.aim.oosevt.lamport.controllers.auth.dto.LoginRequestDTO;
+import nl.han.aim.oosevt.lamport.controllers.auth.dto.LoginResponseDTO;
 import nl.han.aim.oosevt.lamport.data.dao.user.UserDAO;
+import nl.han.aim.oosevt.lamport.data.entity.Goal;
 import nl.han.aim.oosevt.lamport.data.entity.Role;
 import nl.han.aim.oosevt.lamport.data.entity.User;
-import nl.han.aim.oosevt.lamport.exceptions.UnauthorizedException;
+import nl.han.aim.oosevt.lamport.exceptions.InvalidDTOException;
 import nl.han.aim.oosevt.lamport.shared.HashProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +23,8 @@ public class LoginServiceImplTest {
 
     private final LoginRequestDTO loginRequestDto = new LoginRequestDTO(loginUsername, loginPassword);
     private final Role role = new Role(1, "test", new ArrayList<>());
-    private final User loginUser = new User(1, loginUsername, "test@test.nl", correctHash, role);
+    private final Goal goal = new Goal(1, "test", new ArrayList<>());
+    private final User loginUser = new User(1, loginUsername, "test@test.nl", correctHash, role, goal);
     private LoginServiceImpl sut;
     private UserDAO userDAOFixture;
     private HashProvider hashProviderFixture;
@@ -40,7 +43,7 @@ public class LoginServiceImplTest {
         Mockito.when(userDAOFixture.getUserByUsername(loginUsername)).thenReturn(null);
 
         // Assert
-        Assertions.assertThrows(UnauthorizedException.class, () -> sut.login(loginRequestDto));
+        Assertions.assertThrows(InvalidDTOException.class, () -> sut.login(loginRequestDto));
     }
 
     @Test
@@ -50,7 +53,7 @@ public class LoginServiceImplTest {
         Mockito.when(hashProviderFixture.hash(loginPassword)).thenReturn("incorrectHash");
 
         // Assert
-        Assertions.assertThrows(UnauthorizedException.class, () -> sut.login(loginRequestDto));
+        Assertions.assertThrows(InvalidDTOException.class, () -> sut.login(loginRequestDto));
     }
 
     @Test
@@ -61,6 +64,9 @@ public class LoginServiceImplTest {
         Mockito.when(sut.getJWTSecret()).thenReturn("JWT_SECRET");
 
         // Assert
-        sut.login(loginRequestDto);
+        final LoginResponseDTO loginResponseDTO = sut.login(loginRequestDto);
+
+        Assertions.assertNotNull(loginResponseDTO);
+        Assertions.assertNotNull(loginResponseDTO.getToken());
     }
 }

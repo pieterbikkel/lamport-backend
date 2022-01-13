@@ -22,6 +22,7 @@ AS (
     LEFT OUTER JOIN area ON location.area_id = area.area_id
     LEFT OUTER JOIN franchise ON location.franchise_id = franchise.franchise_id
     LEFT OUTER JOIN geofence AS area_geofence ON area_geofence.geofence_id = area.geofence_id
+    ORDER BY location_id
 );
 
 CREATE VIEW interventionView
@@ -53,9 +54,11 @@ AS (
 
 CREATE VIEW userView
 AS (
-    SELECT user_id, username, password, email, users.role_id, role.role_name 
+    SELECT user_id, username, password, email, users.role_id, role.role_name, goal.goal_id, goal.goal_name
     FROM users
     LEFT OUTER JOIN role ON role.role_id = users.role_id
+    LEFT OUTER JOIN goal ON goal.goal_id = users.goal_id
+    ORDER BY user_id
 );
 
 CREATE VIEW roleView
@@ -75,3 +78,9 @@ AS (
     SELECT goal_id, goal_name
     FROM goal
 );
+
+CREATE VIEW profileQuestionView
+AS (
+    SELECT profile_question_id, question, goal_id
+    FROM profile_question
+)
